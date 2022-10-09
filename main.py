@@ -1,6 +1,7 @@
 from collections import Counter
 import pandas as pd
 import numpy as np
+import itertools
 
 wine_list = pd.read_csv('wine_list.csv', encoding='utf-8')
 wine_check = pd.read_csv('blog_crawling.csv', encoding='utf-8')
@@ -16,12 +17,12 @@ def flatten(arg):
 def get_name():
 	wine_name = []
 	for i in wine_check.index:
-		name_str = wine_check._get_value(i, 'wine').replace("[","").replace("]","").replace("'","")
-		wine_name.append(name_str.split(','))
-	return wine_name
+		wine_name.append(eval(wine_check._get_value(i, 'wine')))
+	wine = list(itertools.chain.from_iterable(wine_name))
+	return wine
 
 # 와인 이름, 언급 횟수 튜플
-wine_mention = Counter(flatten(get_name())).most_common()
+wine_mention = Counter(get_name()).most_common()
 # 와인 이름 배열
 wine_name = []
 # 와인 언급 횟수 배열
@@ -41,7 +42,7 @@ def get_info():
 
 wine_info_arr = np.array(flatten(get_info()), dtype=object)
 wine_info_df = pd.DataFrame(wine_info_arr)
-wine_info_df.columns=["이미지", "이름", "영문이름", "종류", "가격", "당도", "바디", "아로마1", "아로마2", "아로마3", "품종"]
+wine_info_df.columns=["이미지", "이름", "영문이름", "종류", "가격", "당도", "바디", "품종", "아로마1", "아로마2", "아로마3"]
 
 wine_info_df.insert(4, '언급 횟수', wine_count)
 
