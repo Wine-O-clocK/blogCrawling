@@ -41,7 +41,7 @@ page = math.trunc(cnt/7)+1
 
 # 크롤링 한 와인 정보들
 wine_list = pd.read_csv('wine_list.csv', encoding='utf-8')
-subset = wine_list['이름']
+subset = wine_list['wineName']
 wine_data = np.array(subset.tolist()) 
 
 def get_count(content):

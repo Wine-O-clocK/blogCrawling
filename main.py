@@ -36,15 +36,15 @@ for wine in wine_mention:
 def get_info():
 	wine_info = []
 	for wine in wine_name:
-		val = wine_list_df.loc[wine_list['이름'] == wine].values.tolist()
+		val = wine_list_df.loc[wine_list['wineName'] == wine].values.tolist()
 		wine_info.append(val)
 	return wine_info
 
 wine_info_arr = np.array(flatten(get_info()), dtype=object)
 wine_info_df = pd.DataFrame(wine_info_arr)
-wine_info_df.columns=["이미지", "이름", "영문이름", "종류", "가격", "당도", "바디", "품종", "아로마1", "아로마2", "아로마3"]
+wine_info_df.columns=["wineImage", "wineName", "wineNameEng", "wineType", "winePrice", "wineSweet", "wineBody", "wineVariety", "aroma1", "aroma2", "aroma3"]
 
-wine_info_df.insert(4, '언급 횟수', wine_count)
+wine_info_df.insert(4, 'wineMention', wine_count)
 
 address = 'C:/Users/limga/OneDrive/Desktop/data/blogCrawling/'
 wine_info_df.to_csv(path_or_buf=address+'wine_result.csv', encoding="utf-8-sig", index=False)

@@ -66,7 +66,7 @@ def present():
 
 # 가성비 top 5
 def cost():
-	df = wine_result[['이름', '가격']]
+	df = wine_result[['wineName', 'winePrice']]
 	wine_cost_list = sorted(df.values.tolist(), key=lambda x:x[1])
 	wine_cnt = len(wine_cost_list)
 
