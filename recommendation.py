@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import random
 import itertools
+import json
 
 wine_result = pd.read_csv('wine_result.csv', encoding='utf-8')
 crawling_result = pd.read_csv('blog_crawling.csv', encoding='utf-8')
@@ -65,27 +66,64 @@ def present():
 	return extraction(wine)
 
 # 가성비 top 5
-def cost():
+def price():
 	df = wine_result[['wineName', 'winePrice']]
-	wine_cost_list = sorted(df.values.tolist(), key=lambda x:x[1])
-	wine_cnt = len(wine_cost_list)
+	wine_price_list = sorted(df.values.tolist(), key=lambda x:x[1])
+	wine_cnt = len(wine_price_list)
 
 	if (wine_cnt > 4):
-		wine_cost_list = wine_cost_list[0:5]
+		wine_price_list = wine_price_list[0:5]
   
   	# 와인 가격만 추출 (동일하면 랜덤으로 와인 뽑기 위해)
-	wine_cost = [i[1] for i in wine_cost_list]
-	wine_name = np.array(wine_cost_list).T[0]
-	if (len(set(wine_cost)) > 1):
+	wine_price = [i[1] for i in wine_price_list]
+	wine_name = np.array(wine_price_list).T[0]
+	if (len(set(wine_price)) > 1):
 		return wine_name
 	else:
 		return random.sample(list(wine_name), len(wine_name))
 
-print(mention())
-print(access())
-print(present())
-print(cost())
+# 추천 와인 정보 합치기
+def mention_row():
+	mention_list = mention()
+	mention_result = []
+	for wine in mention_list:	
+		find_row = wine_result.loc[(wine_result['wineName'] == wine)].values.tolist()
+		mention_result.append(find_row)
+	return flatten(mention_result)
 
+def access_row():
+	access_list = access()
+	access_result = []
+	for wine in access_list:	
+		find_row = wine_result.loc[(wine_result['wineName'] == wine)].values.tolist()
+		access_result.append(find_row)
+	return flatten(access_result)
+
+def present_row():
+	present_list = present()
+	present_result = []
+	for wine in present_list:	
+		find_row = wine_result.loc[(wine_result['wineName'] == wine)].values.tolist()
+		present_result.append(find_row)
+	return flatten(present_result)
+
+def price_row():
+	price_list = price()
+	price_result = []
+	for wine in price_list:	
+		find_row = wine_result.loc[(wine_result['wineName'] == wine)].values.tolist()
+		price_result.append(find_row)
+	return flatten(price_result)
+
+result = {
+	'mention': mention_row(),
+	'access': access_row(),
+	'present': present_row(),
+	'price': price_row()
+}
+
+with open('./data.json','w', encoding='utf-8') as f:
+  json.dump(result, f, ensure_ascii=False, indent=4)
 
 
 
