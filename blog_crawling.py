@@ -36,7 +36,8 @@ result = []
 # 페이지 범위 정함
 url = 'https://section.blog.naver.com/Search/Post.naver?pageNo=1&rangeType=MONTH&orderBy=sim&startDate=' + before_one_month + '&endDate=' + now + '&keyword=' + text
 driver.get(url)
-cnt = int(driver.find_element(By.XPATH, '/html/body/ui-view/div/main/div/div/section/div[1]/div[2]/span/span/em').text[:-1])
+cnt = driver.find_element(By.XPATH, '/html/body/ui-view/div/main/div/div/section/div[1]/div[2]/span/span/em').text[:-1]
+cnt = int(cnt.replace(',', ''))
 page = math.trunc(cnt/7)+1
 
 # 크롤링 한 와인 정보들
