@@ -1,0 +1,91 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from collections import Counter
+from difflib import get_close_matches
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from konlpy.tag import Okt
+from konlpy.tag import Kkma
+from nltk import sent_tokenize
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+import pandas as pd
+import numpy as np
+import time
+import math
+import nltk
+
+okt = Okt()
+kkma = Kkma()
+#nltk.download()
+sia = SentimentIntensityAnalyzer()
+
+path = 'C:/Users/limga/OneDrive/Desktop/data/chromedriver_win32/chromedriver.exe'
+driver = webdriver.Chrome(path)
+
+now = str(datetime.now().date())
+before_one_week = str((datetime.now() - relativedelta(weeks=1)).date())
+
+url_list = []
+content_list = ''
+text = '와인 입문자 추천'
+result = []
+
+# 페이지 범위 정함
+url = 'https://section.blog.naver.com/Search/Post.naver?pageNo=1&rangeType=WEEK&orderBy=sim&startDate=' + before_one_week + '&endDate=' + now + '&keyword=' + text
+driver.get(url)
+cnt = driver.find_element(By.XPATH, '/html/body/ui-view/div/main/div/div/section/div[1]/div[2]/span/span/em').text[:-1]
+cnt = int(cnt.replace(',', ''))
+page = math.trunc(cnt/7)+1
+
+# 크롤링 한 와인 정보들
+wine_list = pd.read_csv('wine_list.csv', encoding='utf-8')
+subset = wine_list['wineName']
+wine_data = np.array(subset.tolist()) 
+
+def get_count(content):
+	wine_result = []  # 와인 count 결과
+  	# wine 배열 돌면서 블로그 내용에 해당 와인 있는지 확인 (있다면 wine_result에 추가)
+	# replace 사용하여 공백 제거 후 확인
+	for w in wine_data:
+		val = content_list.replace(" ", "").find(w.replace(" ", ""))
+		if (val == -1): continue
+		else: 
+			if w not in wine_result: wine_result.append(w)
+			else: continue
+	return wine_result
+
+for i in range(1, page):
+	url = 'https://section.blog.naver.com/Search/Post.naver?pageNo=' + str(i) + '&rangeType=WEEK&orderBy=sim&startDate=' + before_one_week + '&endDate=' + now + '&keyword=' + text
+	driver.get(url)
+	time.sleep(1)
+
+	for j in range(1, 8):
+		titles = driver.find_element(By.XPATH, '/html/body/ui-view/div/main/div/div/section/div[2]/div['+str(j)+']/div/div[1]/div[1]/a[1]')
+		title = titles.get_attribute('href')
+		url_list.append(title)
+
+print("url 수집 끝, 해당 url 데이터 크롤링")
+
+for url in url_list: # 수집한 url 만큼 반복
+	driver.get(url) # 해당 url로 이동
+ 
+	driver.switch_to.frame('mainFrame')
+	overlays = ".se-text"
+	contents = driver.find_elements(By.CSS_SELECTOR, overlays)
+
+	for content in contents:
+		content_list = content_list + content.text # content_list 라는 값에 + 하면서 점점 누적 (블로그 내용 text)
+
+	wine = get_count(content_list)
+	
+	result.append([url, wine])
+	content_list = ''
+
+df = pd.DataFrame(result, columns=["url","wine"]) # 결과를 데이터 프레임으로 저장
+
+address = 'C:/Users/limga/OneDrive/Desktop/data/blogCrawling/'
+df.to_csv(path_or_buf=address+'recent_crawling.csv', encoding="utf-8-sig", index=False)
+
