@@ -39,5 +39,5 @@ wine_info_df.columns=["wineImage", "wineName", "wineNameEng", "wineType", "wineP
 data_json = wine_info_df.to_json(orient = 'records')
 parsed = json.loads(data_json)
 
-with open('./recent_data.json', 'w', encoding='utf-8') as f:
+with open('./winedata/recent_data.json', 'w', encoding='utf-8') as f:
 	json.dump(parsed, f, indent=4, ensure_ascii=False)

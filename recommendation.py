@@ -122,7 +122,7 @@ result = {
 	'price': price_row()
 }
 
-with open('./data.json','w', encoding='utf-8') as f:
+with open('./winedata/data.json','w', encoding='utf-8') as f:
   json.dump(result, f, ensure_ascii=False, indent=4)
 
 
