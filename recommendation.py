@@ -117,7 +117,7 @@ def price_row():
 
 def list_to_json(list):
 	df = pd.DataFrame(list)
-	df.columns=["wineImage", "wineName", "wineNameEng", "wineCount", "wineType", "winePrice", "wineSweet", "wineBody", "wineVariety", "aroma1", "aroma2", "aroma3"]
+	df.columns=["wineImage", "wineName", "wineNameEng", "wineType", "wineMention", "winePrice", "wineSweet", "wineBody", "wineVariety", "aroma1", "aroma2", "aroma3"]
 	data_json = df.to_json(orient = 'records')
 	parsed = json.loads(data_json)
 	return parsed
