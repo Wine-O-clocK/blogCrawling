@@ -115,11 +115,18 @@ def price_row():
 		price_result.append(find_row)
 	return flatten(price_result)
 
+def list_to_json(list):
+	df = pd.DataFrame(list)
+	df.columns=["wineImage", "wineName", "wineNameEng", "wineCount", "wineType", "winePrice", "wineSweet", "wineBody", "wineVariety", "aroma1", "aroma2", "aroma3"]
+	data_json = df.to_json(orient = 'records')
+	parsed = json.loads(data_json)
+	return parsed
+
 result = {
-	'mention': mention_row(),
-	'access': access_row(),
-	'present': present_row(),
-	'price': price_row()
+	'mention': list_to_json(mention_row()),
+	'access': list_to_json(access_row()),
+	'present': list_to_json(present_row()),
+	'price': list_to_json(price_row())
 }
 
 with open('./winedata/data.json','w', encoding='utf-8') as f:
