@@ -11,6 +11,6 @@
 </br>
 </br>
 [최근 1주 크롤링]
-1.recent_crawling.py
-2.(40분 후) recent_main.py
+1. recent_crawling.py
+2. (40분 후) recent_main.py
 => recent_data.json 나옴
